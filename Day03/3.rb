@@ -1,15 +1,19 @@
-INPUT = 347991
+INPUT = 347_991
 
-N, S, W, E = [0, -1], [0, 1], [-1, 0], [1, 0] # directions
-TURN_LEFT  = {N => W, E => N, S => E, W => S}
+N = [0, -1].freeze
+S = [0,  1].freeze
+W = [-1, 0].freeze
+E = [1,  0].freeze
+TURN_LEFT = { N => W, E => N, S => E, W => S }.freeze
 
 def spiral(width, height)
   return false if width < 1 || height < 1
 
-  x, y = width / 2, height / 2 # start near the center
+  x = width  / 2
+  y = height / 2 # start near the center
   dx, dy = S # initial direction
-  
-  matrix = Array.new(height){ Array.new(width) }
+
+  matrix = Array.new(height) { Array.new(width) }
   count = 0
 
   loop do
@@ -17,13 +21,18 @@ def spiral(width, height)
     matrix[y][x] = count # visit
     # try to turn right
     new_dx, new_dy = TURN_LEFT[[dx, dy]]
-    new_x, new_y = x + new_dx, y + new_dy
-    if (0 <= new_x && new_x < width) && (0 <= new_y && new_y < height) && matrix[new_y][new_x].nil?
-      x, y = new_x, new_y
-      dx, dy = new_dx, new_dy
+    new_x = x + new_dx
+    new_y = y + new_dy
+    if (new_x >= 0 && new_x < width) && (new_y >= 0 && new_y < height) &&
+       matrix[new_y][new_x].nil?
+      x = new_x
+      y = new_y
+      dx = new_dx
+      dy = new_dy
     else
-      x, y = x + dx, y + dy
-      return matrix unless (0 <= x && x < width) && (0 <= y && y < height)
+      x += dx
+      y += dy
+      return matrix unless (x >= 0 && x < width) && (y >= 0 && y < height)
     end
   end
 end
@@ -54,39 +63,40 @@ puts "Part One puzzle answer is #{distance}" # 480
 def cumulative_spiral(width, height)
   return false if width < 1 || height < 1
 
-  turn_left  = {N => W, E => N, S => E, W => S}
+  turn_left = { N => W, E => N, S => E, W => S }
 
-  x, y = (width / 2), (height / 2) # start near the center
+  # start near the center
+  x = (width  / 2)
+  y = (height / 2)
   dx, dy = E # initial direction
-  
-  matrix = Array.new(height){ Array.new(width, 0) }
-  first = true
 
-  loop do
-    val = matrix[y - 1][x - 1].to_i + matrix[y - 1][x].to_i + matrix[y - 1][x + 1].to_i + 
-          matrix[y    ][x - 1].to_i + matrix[y    ][x].to_i + matrix[y    ][x + 1].to_i +
-          matrix[y + 1][x - 1].to_i + 
-          matrix[y + 1][x].to_i + 
-          matrix[y + 1][x + 1].to_i
+  matrix = Array.new(height) { Array.new(width, 0) }
+
+  loop.with_index do |_, index|
+    val = matrix[y - 1][x - 1].to_i + matrix[y - 1][x].to_i +
+          matrix[y - 1][x + 1].to_i + matrix[y][x - 1].to_i +
+          matrix[y + 1][x + 1].to_i + matrix[y][x + 1].to_i +
+          matrix[y + 1][x - 1].to_i + matrix[y + 1][x].to_i +
+          matrix[y][x].to_i
 
     return val if val > INPUT
-    
-    if first
-      matrix[y][x] = 1
-      first = false
-    else
-      matrix[y][x] = val # visit
-    end
+
+    matrix[y][x] = index.zero? ? 1 : val
 
     # try to turn left
     new_dx, new_dy = turn_left[[dx, dy]]
-    new_x, new_y = x + new_dx, y + new_dy
-    if (0 <= new_x && new_x < width) && (0 <= new_y && new_y < height) && matrix[new_y][new_x].zero?
-      x, y = new_x, new_y
-      dx, dy = new_dx, new_dy
+    new_x = x + new_dx
+    new_y = y + new_dy
+    if (new_x >= 0 && new_x < width) && (new_y >= 0 && new_y < height) &&
+       matrix[new_y][new_x].zero?
+      x = new_x
+      y = new_y
+      dx = new_dx
+      dy = new_dy
     else
-      x, y = x + dx, y + dy
-      return matrix unless (0 <= x && x < width) && (0 <= y && y < height)
+      x += dx
+      y += dy
+      return matrix unless (x >= 0 && x < width) && (y >= 0 && y < height)
     end
   end
 end

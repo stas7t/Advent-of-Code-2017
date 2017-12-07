@@ -12,16 +12,13 @@ def answer(array, variant)
   loop do
     offset = arr[i]
 
-    case variant
-    when 1 then arr[i] += 1
-    when 2 then offset >= 3 ? arr[i] -= 1 : arr[i] += 1
-    end
+    arr[i] += 1 if variant == 1 || (variant == 2 && offset < 3)
+    arr[i] -= 1 if variant == 2 && offset >= 3
 
     i += offset
     steps += 1
-    break if arr[i].nil?
+    break steps if arr[i].nil?
   end
-  steps
 end
 
 puts "Part One puzzle answer is #{answer(input_array, 1)}" # 373160

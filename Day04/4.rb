@@ -6,7 +6,7 @@ def passphrase_valid?(arr)
 end
 
 def without_anagram?(arr)
-  arr.map!{ |elem| elem.split('').sort.join('') }
+  arr.map! { |elem| elem.split('').sort.join('') }
   passphrase_valid?(arr)
 end
 
